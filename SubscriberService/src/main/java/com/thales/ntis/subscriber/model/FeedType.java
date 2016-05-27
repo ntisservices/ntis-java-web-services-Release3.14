@@ -16,7 +16,9 @@ public enum FeedType {
 
     NTIS_MODEL_UPDATE_NOTIFICATION("NTIS Model Update Notification"),
 
-    EVENT_DATA("Event Data");
+    EVENT_DATA("Event Data"),
+
+    FULL_REFRESH("Event Data - Full Refresh");
 
     private String feedTypeText;
 
