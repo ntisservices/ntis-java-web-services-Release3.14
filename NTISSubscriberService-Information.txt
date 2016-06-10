@@ -56,3 +56,5 @@ The data contained in the publication message is defined, as per the WSDL, as a 
 There are 2 types of publication: a Data Update (containing on-occurrence changes to the data) and a Full Refresh (containing a full payload of all data items for that particular data type).  A Full Refresh publication is sent to a Subscriber system when: the NTIS service restarts, the subscription options change in a way that affects the data received by the Subscriber, the Subscriber system fails to receive a previous publication of that data type.  Full Refresh publications are only applicable to types of data that are stateful and infrequently updated: Events and VMS/Matrix data.
 
 To differentiate between the different publications, the Full Refresh publication, has the text “ – Full Refresh” appended to the normal text included in the <feedType> element (see above).
+
+During the full refresh delivery (which may contain a large amount of data), data updates intended for the Subscriber will continue to be sent using the normal operation. The Subscriber is expected to consolidate the data from the Full Refresh and updates which happen during full refresh.
