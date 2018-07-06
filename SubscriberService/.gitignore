@@ -4,3 +4,8 @@
 /bin
 /SubscriberService.log*
 /.settings
+
+/.project
+/.classpath
+/.settings
+
