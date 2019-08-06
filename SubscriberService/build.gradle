@@ -2,6 +2,7 @@ buildscript {
     ext {
         baseArtifactoryUrl = 'http://gts-artifactory.gtsdevlan.com:8081/artifactory'
         ntisVirtualUrl = baseArtifactoryUrl + '/ntis-virtual'
+        scriptsLocation = project.hasProperty('scriptsLocation') ? project.getProperty('scriptsLocation') : System.getenv('NTIS_SCRIPTS_LOCATION')
     }
 
     repositories {
@@ -24,12 +25,13 @@ apply plugin: "checkstyle"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-apply from: 'http://scripts-r3-8.ntis.gtsdevlan.com/common_scripts/dependency-check.gradle'
-apply from: 'http://scripts-r3-8.ntis.gtsdevlan.com/common_scripts/version-details.gradle'
-apply from: 'http://scripts-r3-8.ntis.gtsdevlan.com/common_scripts/project-setup.gradle'
+apply from: "$scriptsLocation/common_scripts/dependency-check.gradle"
+apply from: "$scriptsLocation/common_scripts/version-details.gradle"
+apply from: "$scriptsLocation/common_scripts/project-setup.gradle"
 
-apply from: 'http://scripts-r3-8.ntis.gtsdevlan.com/common_scripts/gradle/repository/artifactory.gradle'
-apply from: 'http://scripts-r3-8.ntis.gtsdevlan.com/common_scripts/eclipse.gradle'
+apply from: "$scriptsLocation/common_scripts/gradle/repository/artifactory.gradle"
+apply from: "$scriptsLocation/common_scripts/eclipse.gradle"
+
 configurations {
     jaxb
 }
