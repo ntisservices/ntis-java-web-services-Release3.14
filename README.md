@@ -14,7 +14,7 @@ Prerequisites
 
  JDK v1.7
 
- Gradle v1.11
+ Gradle (n/a - uses Gradle Wrapper, bundled with the project)
 
  Eclipse J2EE IDE v3.6.2
  
@@ -35,7 +35,7 @@ Prerequisites
 Importing Project in to Eclipse
 ---------------------------------
 
-1. Download the SubscriberService example application from https://github.com/ntisservices/ntis-java-web-services-Release2.5/archive/master.zip
+1. Download the SubscriberService example application from https://github.com/ntisservices/ntis-java-web-services-Release3.14/archive/master.zip
 
 2. Extract the zip file into the target location on your local file system.
 

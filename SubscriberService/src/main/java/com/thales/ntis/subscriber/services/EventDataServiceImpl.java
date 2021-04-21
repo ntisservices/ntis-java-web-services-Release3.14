@@ -1,32 +1,3 @@
-///////////////////////////////////////////////////////////////
-//
-// Copyright (c) Thales UK Limited 2018, All Rights Reserved
-// The copyright herein, subject to any pre-existing rights of third parties, is the property of Thales UK Limited.
-// It may not be sold, licensed, reproduced, modified, adapted, published, disclosed or translated in any material
-// form (including storage in any medium by electronic means whether or not transiently or incidentally) in whole
-// or in part without the prior written permission of Thales UK Limited neither shall it be used other than for the
-// purpose for which it is supplied.
-//
-///////////////////////////////////////////////////////////////
-//
-// PROJECT REFERENCE: NTIS
-//
-// COMPONENT NAME: ntis-subscriberservice
-//
-// UNIT OR MODEL ELEMENT NAME: EventDataServiceImpl.java
-//
-// CONFIGURATION NAME: ntis-subscriberservice
-//
-// OVERVIEW: See Javadoc
-//
-///////////////////////////////////////////////////////////////
-//
-// CLASSIFICATION
-//  1) Country of Origin: UK
-//  2) Classification: OFFICIAL
-//
-///////////////////////////////////////////////////////////////
-
 package com.thales.ntis.subscriber.services;
 
 import java.util.HashMap;
@@ -39,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.thales.ntis.subscriber.datex.AssociatedEvent;
 import com.thales.ntis.subscriber.datex.D2LogicalModel;
 import com.thales.ntis.subscriber.datex.MaintenanceWorks;
 import com.thales.ntis.subscriber.datex.RoadMaintenanceTypeEnum;
@@ -49,7 +21,6 @@ import com.thales.ntis.subscriber.model.FeedType;
 
 /**
  * This is an example service class implementation.
- * 
  */
 @Service
 public class EventDataServiceImpl implements
@@ -145,12 +116,18 @@ public class EventDataServiceImpl implements
 
     private boolean isEventUpdatedAfterFullRefreshPublicationTime(SituationRecord event, DateTime dateTime) {
         DateTime eventVersionTime = xmlGregoriaCalanderToDateTime(event.getSituationRecordVersionTime());
+        if (eventVersionTime == null) {
+            return false;
+        }
         return eventVersionTime.isAfter(dateTime);
     }
 
     private boolean isCachedEventNewerThanRefreshedEvent(SituationRecord cachedEvent, SituationRecord refreshEvent) {
         DateTime cachedVersionTime = xmlGregoriaCalanderToDateTime(cachedEvent.getSituationRecordVersionTime());
         DateTime refreshVersionTime = xmlGregoriaCalanderToDateTime(refreshEvent.getSituationRecordVersionTime());
+        if (cachedVersionTime == null || refreshVersionTime == null) {
+            return false;
+        }
         return cachedVersionTime.isAfter(refreshVersionTime);
     }
 
@@ -165,14 +142,24 @@ public class EventDataServiceImpl implements
 
                     for (Situation situation : situations) {
                         // Only have 1 situationRecord per situation (index=0)
-                        SituationRecord situationRecord = situation.getSituationRecord().get(0);
-                        EVENT_CACHE.put(situationRecord.getId(), situationRecord);
-                        processEventData(situationRecord);
+                        processEventData(situation);
                     }
                 }
             } catch (Exception e) {
                 LOG.error(e.getMessage());
             }
+        }
+    }
+
+    private void processEventData(Situation situation) {
+        SituationRecord situationRecord = situation.getSituationRecord().get(0);
+        EVENT_CACHE.put(situationRecord.getId(), situationRecord);
+        processEventData(situationRecord);
+        AssociatedEvent associatedEvent = situation.getSituationExtension().getAssociatedEvent().get(0);
+        if (null != associatedEvent) {
+            LOG.info("Associated event ID: {}", associatedEvent.getRelatedSituation().getId());
+            LOG.info("Associated event reference: {}", associatedEvent.getRelatedSituationReference());
+            LOG.info("Association type: {}", associatedEvent.getAssociationType());
         }
     }
 
@@ -208,7 +195,7 @@ public class EventDataServiceImpl implements
     }
 
     private void processMaintenanceWorksEvent(MaintenanceWorks maintenanceWorksEvent) {
-        if (maintenanceWorksEvent.isUrgentRoadworks())
+        if (Boolean.TRUE.equals(maintenanceWorksEvent.isUrgentRoadworks()))
             LOG.info("Urgent Roadworks!");
         List<RoadMaintenanceTypeEnum> maintenanceTypes = maintenanceWorksEvent.getRoadMaintenanceType();
         for (RoadMaintenanceTypeEnum maintenanceType : maintenanceTypes) {

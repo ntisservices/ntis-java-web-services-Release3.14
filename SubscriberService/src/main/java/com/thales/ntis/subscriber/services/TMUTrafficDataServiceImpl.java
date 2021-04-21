@@ -1,32 +1,3 @@
-///////////////////////////////////////////////////////////////
-//
-// Copyright (c) Thales UK Limited 2018, All Rights Reserved
-// The copyright herein, subject to any pre-existing rights of third parties, is the property of Thales UK Limited.
-// It may not be sold, licensed, reproduced, modified, adapted, published, disclosed or translated in any material
-// form (including storage in any medium by electronic means whether or not transiently or incidentally) in whole
-// or in part without the prior written permission of Thales UK Limited neither shall it be used other than for the
-// purpose for which it is supplied.
-//
-///////////////////////////////////////////////////////////////
-//
-// PROJECT REFERENCE: NTIS
-//
-// COMPONENT NAME: ntis-subscriberservice
-//
-// UNIT OR MODEL ELEMENT NAME: TMUTrafficDataServiceImpl.java
-//
-// CONFIGURATION NAME: ntis-subscriberservice
-//
-// OVERVIEW: See Javadoc
-//
-///////////////////////////////////////////////////////////////
-//
-// CLASSIFICATION
-//  1) Country of Origin: UK
-//  2) Classification: OFFICIAL
-//
-///////////////////////////////////////////////////////////////
-
 package com.thales.ntis.subscriber.services;
 
 import java.util.List;
@@ -49,7 +20,6 @@ import com.thales.ntis.subscriber.datex.TrafficSpeed;
 
 /**
  * This is an example service class implementation.
- * 
  */
 @Service
 public class TMUTrafficDataServiceImpl implements
@@ -70,7 +40,7 @@ public class TMUTrafficDataServiceImpl implements
             if (measuredDataPublication != null) {
                 List<SiteMeasurements> siteMeasurementsInPayload = measuredDataPublication.getSiteMeasurements();
 
-                LOG.info("Number of Site Measurements in payload: " + siteMeasurementsInPayload.size());
+                LOG.info("Number of Site Measurements in payload: {}", siteMeasurementsInPayload.size());
 
                 for (SiteMeasurements measurementsForSite : siteMeasurementsInPayload) {
                     extractTrafficDataFromSiteMeasurements(measurementsForSite);
@@ -85,8 +55,8 @@ public class TMUTrafficDataServiceImpl implements
     private void extractTrafficDataFromSiteMeasurements(SiteMeasurements measurementsForSite) {
 
         String siteGUID = measurementsForSite.getMeasurementSiteReference().getId();
-        LOG.info("TMU site ID: " + siteGUID);
-        LOG.info("Number of measurements for TMU site: " + measurementsForSite.getMeasuredValue().size());
+        LOG.info("TMU site ID: {}", siteGUID);
+        LOG.info("Number of measurements for TMU site: {}", measurementsForSite.getMeasuredValue().size());
 
         // There can be a number of measured values reported for the site
         for (SiteMeasurementsIndexMeasuredValue measuredValue : measurementsForSite.getMeasuredValue()) {
@@ -105,31 +75,30 @@ public class TMUTrafficDataServiceImpl implements
             // basic data
             if (TrafficFlow.class.equals(basicData.getClass())) {
                 TrafficFlow flow = (TrafficFlow) basicData;
-                LOG.info("[Measurement Index : " + index + "] Vehicle Flow Rate: " + flow.getVehicleFlow().getVehicleFlowRate());
+                LOG.info("[Measurement Index : {}] Vehicle Flow Rate: {}", index, flow.getVehicleFlow().getVehicleFlowRate());
 
-                if (flow.getVehicleFlow().isDataError()) {
+                if (Boolean.TRUE.equals(flow.getVehicleFlow().isDataError())) {
                     List<MultilingualStringValue> errorReason = flow.getVehicleFlow().getReasonForDataError().getValues()
                             .getValue();
                     for (MultilingualStringValue value : errorReason) {
-                        LOG.info("    Data in error. Reason: \"" + value.getValue() + "\"");
+                        LOG.info("    Data in error. Reason: \"{}\"", value.getValue());
                     }
                 }
 
             } else if (TrafficSpeed.class.equals(basicData.getClass())) {
                 TrafficSpeed speed = (TrafficSpeed) basicData;
-                LOG.info("[Measurement Index : " + index + "] Average Speed: " + speed.getAverageVehicleSpeed().getSpeed());
+                LOG.info("[Measurement Index : {}] Average Speed: {}", index, speed.getAverageVehicleSpeed().getSpeed());
 
             } else if (TrafficHeadway.class.equals(basicData.getClass())) {
                 TrafficHeadway headway = (TrafficHeadway) basicData;
-                LOG.info("[Measurement Index : " + index + "] Average Headway: " + headway.getAverageTimeHeadway().getDuration());
+                LOG.info("[Measurement Index : {}] Average Headway: {}", index, headway.getAverageTimeHeadway().getDuration());
 
             } else if (TrafficConcentration.class.equals(basicData.getClass())) {
                 TrafficConcentration concentration = (TrafficConcentration) basicData;
-                LOG.info("[Measurement Index : " + index + "] Traffic Occupancy (%): "
-                        + concentration.getOccupancy().getPercentage());
-
+                LOG.info("[Measurement Index : {}] Traffic Occupancy (%): {}", index,
+                        concentration.getOccupancy().getPercentage());
             } else {
-                LOG.error("Unexpected traffic data type contained in publication: " + basicData.getClass().getSimpleName());
+                LOG.error("Unexpected traffic data type contained in publication: {}", basicData.getClass().getSimpleName());
             }
         }
     }

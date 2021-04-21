@@ -1,36 +1,14 @@
-buildscript {
-    ext {
-        baseArtifactoryUrl = 'http://gts-artifactory.gtsdevlan.com:8081/artifactory'
-        ntisVirtualUrl = baseArtifactoryUrl + '/ntis-virtual'
-        scriptsLocation = project.hasProperty('scriptsLocation') ? project.getProperty('scriptsLocation') : System.getenv('NTIS_SCRIPTS_LOCATION')
-    }
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'jetty'
 
-    repositories {
-        maven { url ntisVirtualUrl }
-    }
-    
-    dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.2"
-        classpath "org.owasp:dependency-check-gradle:3.1.1"
-    }
-}
 repositories {
-    maven { url ntisVirtualUrl }
+    mavenLocal()
+    mavenCentral()
 }
-
-apply plugin: "jetty"
-apply plugin: "eclipse-wtp"
-apply plugin: "checkstyle"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-
-apply from: "$scriptsLocation/common_scripts/dependency-check.gradle"
-apply from: "$scriptsLocation/common_scripts/version-details.gradle"
-apply from: "$scriptsLocation/common_scripts/project-setup.gradle"
-
-apply from: "$scriptsLocation/common_scripts/gradle/repository/artifactory.gradle"
-apply from: "$scriptsLocation/common_scripts/eclipse.gradle"
 
 configurations {
     jaxb
@@ -44,20 +22,19 @@ dependencies {
     compile 'javax.xml:jaxb-api:2.1'
     compile 'org.apache.ws.commons.schema:XmlSchema:1.3.2'
     compile group: 'joda-time', name: 'joda-time', version: '2.3'
-    
+
     compile group: 'junit', name: 'junit', version: '4.10'
     compile group: 'org.mortbay.jetty', name: 'jetty-util', version: '6.1.26'
     compile group: 'commons-io', name: 'commons-io', version: '1.4'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.1'
-   
+
     compile group: 'commons-io', name: 'commons-io', version: '1.3.2'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0.1'
     
     jaxb group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
     jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.1.6'
-    
+
     testCompile group: 'junit', name: 'junit', version: '4.10'
-    
 }
 
 eclipseClasspath.dependsOn(cleanEclipseClasspath)
