@@ -4,7 +4,9 @@ apply plugin: 'jetty'
 
 repositories {
     mavenLocal()
-    mavenCentral()
+    maven { url "http://insecure.repo1.maven.org/maven2/" }
+    maven { url "https://repo1.maven.org/maven2/" }
+    maven { url "https://repo.maven.apache.org/maven2/" }
 }
 
 sourceCompatibility = 1.7
